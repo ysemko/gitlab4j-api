@@ -141,7 +141,7 @@ public class GroupApi extends AbstractApi {
      * @throws GitLabApiException if any exception occurs
      */
     public List<Group> getActiveGroups(int page, int perPage) throws GitLabApiException {
-        GitLabApiForm formData = createGitLabApiForm()
+        Form formData = new GitLabApiForm()
                 .withParam("active", true)
                 .withParam(PAGE_PARAM, page)
                 .withParam(PER_PAGE_PARAM, perPage);
@@ -159,7 +159,7 @@ public class GroupApi extends AbstractApi {
      * @throws GitLabApiException if any exception occurs
      */
     public Pager<Group> getActiveGroups(int itemsPerPage) throws GitLabApiException {
-        GitLabApiForm formData = createGitLabApiForm().withParam("active", true);
+        Form formData = new GitLabApiForm().withParam("active", true);
         return (new Pager<Group>(this, Group.class, itemsPerPage, formData.asMap(), "groups"));
     }
 
