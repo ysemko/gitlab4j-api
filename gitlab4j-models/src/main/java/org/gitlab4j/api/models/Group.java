@@ -54,7 +54,7 @@ public class Group extends AbstractGroup<Group> {
 
     private String path;
     private String description;
-    private String archived; 
+    private String archived;
     private Visibility visibility;
     private Boolean lfsEnabled;
     private Boolean requestAccessEnabled;
