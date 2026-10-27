@@ -1,6 +1,5 @@
 package org.gitlab4j.api.models;
 
-import java.beans.Visibility;
 import java.util.Date;
 import java.util.List;
 
