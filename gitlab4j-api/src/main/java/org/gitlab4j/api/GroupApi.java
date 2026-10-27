@@ -1,7 +1,11 @@
 package org.gitlab4j.api;
 
+import java.beans.Visibility;
 import java.io.File;
 import java.io.InputStream;
+import java.lang.foreign.MemorySegment.Scope;
+import java.lang.reflect.Member;
+import java.text.Normalizer.Form;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -9,11 +13,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import jakarta.ws.rs.core.Form;
-import jakarta.ws.rs.core.GenericType;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.Response;
+import javax.swing.SortOrder;
 
 import org.gitlab4j.api.models.AccessLevel;
 import org.gitlab4j.api.models.AccessRequest;
@@ -27,18 +27,20 @@ import org.gitlab4j.api.models.GroupHook;
 import org.gitlab4j.api.models.GroupHookParams;
 import org.gitlab4j.api.models.GroupParams;
 import org.gitlab4j.api.models.GroupProjectsFilter;
-import org.gitlab4j.api.models.ImpersonationToken.Scope;
 import org.gitlab4j.api.models.Iteration;
 import org.gitlab4j.api.models.IterationFilter;
 import org.gitlab4j.api.models.LdapGroupLink;
-import org.gitlab4j.api.models.Member;
 import org.gitlab4j.api.models.Project;
 import org.gitlab4j.api.models.SamlGroupLink;
 import org.gitlab4j.api.models.SharedGroupsFilter;
 import org.gitlab4j.api.models.UploadedFile;
 import org.gitlab4j.api.models.Variable;
-import org.gitlab4j.api.models.Visibility;
 import org.gitlab4j.models.utils.ISO8601;
+
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.Response;
 
 /**
  * This class implements the client side API for the GitLab groups calls.
@@ -116,6 +118,63 @@ public class GroupApi extends AbstractApi {
      */
     public Stream<Group> getGroupsStream() throws GitLabApiException {
         return (getGroups(getDefaultPerPage()).stream());
+    }
+
+    /**
+     * Get a list of active groups
+     *
+     * <pre><code>GitLab Endpoint: GET /groups?active=true</code></pre>
+     *
+     * @return a list of active Groups
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<Group> getActiveGroups() throws GitLabApiException {
+        return (getActiveGroups(getDefaultPerPage()).all());
+    }
+
+    /**
+     * Get a list of active groups using the specified page and per page settings.
+     *
+     * <pre><code>GitLab Endpoint: GET /groups?active=true</code></pre>
+     *
+     * @param page the page to get
+     * @param perPage the number of groups per page
+     * @return the list of active Groups in the specified range
+     * @throws GitLabApiException if any exception occurs
+     */
+    public List<Group> getActiveGroups(int page, int perPage) throws GitLabApiException {
+        GitLabApiForm formData = createGitLabApiForm()
+                .withParam("active", true)
+                .withParam(PAGE_PARAM, page)
+                .withParam(PER_PAGE_PARAM, perPage);
+        Response response = get(Response.Status.OK, formData.asMap(), "groups");
+        return (response.readEntity(new GenericType<List<Group>>() {}));
+    }
+
+    /**
+     * Get a Pager of active groups.
+     *
+     * <pre><code>GitLab Endpoint: GET /groups?active=true</code></pre>
+     *
+     * @param itemsPerPage the number of active Group instances that will be fetched per page
+     * @return a Pager of active Groups
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Pager<Group> getActiveGroups(int itemsPerPage) throws GitLabApiException {
+        GitLabApiForm formData = createGitLabApiForm().withParam("active", true);
+        return (new Pager<Group>(this, Group.class, itemsPerPage, formData.asMap(), "groups"));
+    }
+
+    /**
+     * Get a Stream of active groups
+     *
+     * <pre><code>GitLab Endpoint: GET /groups?active=true</code></pre>
+     *
+     * @return a Stream of active Groups
+     * @throws GitLabApiException if any exception occurs
+     */
+    public Stream<Group> getActiveGroupsStream() throws GitLabApiException {
+        return (getActiveGroups(getDefaultPerPage()).stream());
     }
 
     /**
