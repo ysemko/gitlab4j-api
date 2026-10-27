@@ -20,8 +20,8 @@ public class GroupFilter implements Serializable {
     private String search;
     private GroupOrderBy orderBy;
     private SortOrder sort;
-	private Boolean archived;
-	private Boolean active;
+    private Boolean archived;
+    private Boolean active;
     private Boolean statistics;
     private Boolean withCustomAttributes;
     private Boolean owned;
